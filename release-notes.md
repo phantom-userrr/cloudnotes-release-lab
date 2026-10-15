@@ -1,27 +1,25 @@
 # Release Notes — CloudNotes Release Lab
 
-Fill in this template as you diagnose and fix each of the three planted faults.
-
 ## Task 1 — Terraform/HCL validation fault
 
 **Original error (paste `terraform validate` output):**
 
-```
-<paste here>
+```text
+Error: Reference to undeclared input variable "bucket_name_old".
 ```
 
 **Root cause:**
 
-<explain>
+`main.tf` referenced an undeclared input variable.
 
 **Fix applied:**
 
-<describe the change>
+Replaced `var.bucket_name_old` with `var.bucket_name` in `terraform/main.tf`.
 
 **Evidence (clean validate output):**
 
-```
-<paste here>
+```text
+Success! The configuration is valid.
 ```
 
 ---
@@ -30,16 +28,16 @@ Fill in this template as you diagnose and fix each of the three planted faults.
 
 **Original problem:**
 
-<describe what was duplicated / misconfigured>
+The root module duplicated the storage resource, referenced an outdated output, and shared the same state path between dev and staging.
 
 **Fix applied:**
 
-<describe the change — module call + unique backend paths>
+Replaced the duplicate resource with `module.storage`, updated the output to `module.storage.bucket_path`, and assigned staging its own state file.
 
 **Evidence:**
 
-```
-<paste here>
+```text
+Success! The configuration is valid.
 ```
 
 ---
@@ -48,20 +46,21 @@ Fill in this template as you diagnose and fix each of the three planted faults.
 
 **Original error (paste `docker build` output):**
 
-```
-<paste here>
+```text
+failed to resolve source metadata for docker.io/library/build:latest
 ```
 
 **Root cause:**
 
-<explain>
+The Dockerfile referenced a nonexistent `build` stage and contained a hardcoded API key.
 
 **Fix applied:**
 
-<describe the Dockerfile / compose changes>
+Changed `COPY --from=build` to `COPY --from=deps` and removed the hardcoded API key from the Dockerfile.
 
 **Evidence (`curl http://localhost:8080/health`):**
 
-```
-<paste here>
+```text
+HTTP/1.1 200 OK
+{"status":"ok","service":"cloudnotes-api","version":"0.1.0","apiKeyConfigured":true}
 ```
